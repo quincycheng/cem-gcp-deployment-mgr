@@ -28,12 +28,12 @@ done
 
 ## Run Deployment Steps
 
-### Set cloud shell project project_id
+### 1. Set cloud shell project project_id
 ```
 gcloud config set project ${PROJECT_ID} 
 ```
 
-### Enable APIs
+### 2. Enable APIs
 ```
 echo "Enabling deploymentmanager, IAM ,cloudresourcemanager and bigQuery APIs..."
 gcloud services enable deploymentmanager.googleapis.com \
@@ -43,7 +43,7 @@ bigquery.googleapis.com \
 recommender.googleapis.com
 ```
 
-### add permissions to google serviceaccount
+### 3. Add permissions to google serviceaccount
 ```
 echo "Adding google serviceaccount permissions..."
 gserviceaccount=$(gcloud projects get-iam-policy \
@@ -58,14 +58,14 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --role roles/iam.roleAdmin 
 ```
 
-### Create deployment
+### 4. Create deployment
 ```
 echo "Creating CEM service account deployment..."
 gcloud deployment-manager deployments create ${SERVICE_ACCOUNT_NAME} \
 --config ${SERVICE_ACCOUNT_CONFIG_FILE} 2> /dev/null
 ```
 
-### Add iam policy binding to the service account
+### 5. Add iam policy binding to the service account
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --member serviceAccount:${SERVICE_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com \
@@ -76,13 +76,13 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --role roles/bigquery.jobUser 
 ```
 
-### Create bigQuery dataset
+### 6. Create bigQuery dataset
 ```
 echo "Creating bigQuery dataset..."
 bq mk ${CEM_DATASET_NAME}
 ```
 
-### Create sink that export all logs tox BigQuery
+### 7. Create sink that export all logs tox BigQuery
 ```
 echo "Creating Sink with bigQuery destination..."
 gcloud logging sinks create ${CEM_SINK_NAME} \
@@ -90,12 +90,12 @@ bigquery.googleapis.com/projects/${PROJECT_ID}/datasets/${CEM_DATASET_NAME} \
 --log-filter="NOT resource.type: k8s" --quiet
 ```
 
-### Get all details about cem-sink
+### 8. Get all details about cem-sink
 ```
 cemsinkservice=$(gcloud beta logging sinks describe ${CEM_SINK_NAME} |grep -m 1 -Po 'p[0-9]+-[0-9]+' )
 ```
 
-### Set IAM permission to sink service account
+### 9. Set IAM permission to sink service account
 ```
 echo "Adding sink serviceaccount permissions..."
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
@@ -103,14 +103,14 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --role roles/bigquery.dataEditor
 ```
 
-### Set IAM permission to sink service account
+### 10. Set IAM permission to sink service account
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --member serviceAccount:${cemsinkservice}@gcp-sa-logging.iam.gserviceaccount.com \
 --role roles/logging.logWriter 
 ```
 
-### Update sink with the new roles
+### 11. Update sink with the new roles
 ```
 echo "Update sink..."
 gcloud logging sinks update  ${CEM_SINK_NAME} bigquery.googleapis.com/projects/${PROJECT_ID}/datasets/${CEM_DATASET_NAME}
