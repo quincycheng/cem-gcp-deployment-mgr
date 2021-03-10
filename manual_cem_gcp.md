@@ -14,17 +14,9 @@ export CEM_SINK_NAME=cem-sink
 export CEM_DATASET_NAME=cem_logs_dataset
 
 gcloud config set project ${PROJECT_ID} 
-
-for line in $(gcloud deployment-manager deployments list); do
-    if [[ "${line}" == "cem-service-account" ]]; then
-        cat << EOF
-            ERROR: 'cem-service-account' deployment already exists.
-            Please delete 'cem-service-account' deployment and all its resources and try again
-        EOF
-        exit 1
-    fi
-done
+gcloud deployment-manager deployments list
 ```
+If `cem-service-account` is shown, please delete 'cem-service-account' deployment and all its resources and try again
 
 ## Run Deployment Steps
 
