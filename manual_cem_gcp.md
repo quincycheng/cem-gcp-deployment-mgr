@@ -62,7 +62,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 ```
 echo "Creating CEM service account deployment..."
 gcloud deployment-manager deployments create ${SERVICE_ACCOUNT_NAME} \
---config ${SERVICE_ACCOUNT_CONFIG_FILE} 2> /dev/null
+--config ${SERVICE_ACCOUNT_CONFIG_FILE} 
 ```
 
 ### 5. Add iam policy binding to the service account
@@ -93,6 +93,7 @@ bigquery.googleapis.com/projects/${PROJECT_ID}/datasets/${CEM_DATASET_NAME} \
 ### 8. Get all details about cem-sink
 ```
 cemsinkservice=$(gcloud beta logging sinks describe ${CEM_SINK_NAME} |grep -m 1 -Po 'p[0-9]+-[0-9]+' )
+echo ${cemsinkservice}
 ```
 
 ### 9. Set IAM permission to sink service account
