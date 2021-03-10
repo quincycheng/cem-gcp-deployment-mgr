@@ -82,7 +82,7 @@ echo "Creating bigQuery dataset..."
 bq mk ${CEM_DATASET_NAME}
 ```
 
-### 7. Create sink that export all logs tox BigQuery
+### 7. Create sink that export all logs to BigQuery
 ```
 echo "Creating Sink with bigQuery destination..."
 gcloud logging sinks create ${CEM_SINK_NAME} \
